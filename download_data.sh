@@ -37,3 +37,7 @@ python resize_4.py --folder data/evaluation/hr/manga109 --save_path data/evaluat
 
 echo "Downloading VGG network"
 gdown https://drive.google.com/file/d/1henrktM4Cw9hJIJBDEObAzl-eCbpzNaJ/view?usp=drive_link
+
+echo "Downloading the pre-trained model"
+gdown --id 1WHPkBKkA2Bm19PnbOi19F9yp9YoN2FCN
+echo "All done!"
