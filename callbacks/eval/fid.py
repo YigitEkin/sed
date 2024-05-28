@@ -67,30 +67,11 @@ class FIDCallback(pl.callbacks.Callback):
         return {'mean': mean, 'cov':cov}
         
     @rank_zero_only
-    def frechet_distance(self,real_stats, fake_stats):
+    def frechet_distance(self, real_stats, fake_stats):
         mu, cov = real_stats['mean'], real_stats['cov']
         mu2, cov2 = fake_stats['mean'], fake_stats['cov']
-
-        # Ensure covariance matrices are positive definite
-        eps = 1e-6
-        cov_fixed = cov + eps * np.eye(cov.shape[0])
-        cov2_fixed = cov2 + eps * np.eye(cov2.shape[0])
-
-        # Compute the geometric mean of the covariance matrices
-        cc = linalg.sqrtm(cov_fixed.dot(cov2_fixed))
-
-        # Compute the squared Euclidean distance between the means
-        mean_diff = mu - mu2
-        mean_diff_sq = np.sum(mean_diff**2)
-
-        # Compute the trace of the sum of the covariances minus twice the geometric mean
-        cov_sum = cov_fixed + cov2_fixed
-        cov_diff = cov - cov2
-        cov_diff_sq = np.trace(cov_diff @ cov_diff)
-
-        # Compute the Fréchet distance
-        dist = mean_diff_sq + cov_diff_sq + 2 * np.trace(cov_sum - 2 * cc)
-
+        cc, _ = linalg.sqrtm(np.dot(cov, cov2), disp=False)
+        dist = np.sum((mu - mu2)**2) + np.trace(cov + cov2 - 2*cc)
         return np.real(dist)
 
     

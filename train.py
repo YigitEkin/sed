@@ -6,7 +6,7 @@ from utils.config_utils import parse_config
 import pytorch_lightning.loggers as pl_loggers
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from callbacks.logger.image_logger import ImageLoggerCallback
-from callbacks.eval.fid import FIDCallback
+from callbacks.eval.lpips import LPIPSCallback
 from pytorch_lightning.utilities import rank_zero_only
 import os
 import shutil
@@ -74,11 +74,11 @@ def train(args):
     synthesize_callback_test = ImageLoggerCallback(data_module.test_dataset, "test", **config.synthesize_callback_test)
     
     if not args.debug:
-        fid_callback_test = FIDCallback(test_dataloader, dataset_type="test", **config.fid_callback)
+        lpips_callback_test = LPIPSCallback(test_dataloader, dataset_type="test", **config.lpips_callback)
 
     if not args.debug:
         trainer = pl.Trainer(logger=[csv_logger, tb_logger], 
-                            callbacks=[ fid_callback_test, 
+                            callbacks=[ lpips_callback_test, 
                                         synthesize_callback_train, 
                                         synthesize_callback_test, lr_monitor_callback,
                                         ckpt_callback], 

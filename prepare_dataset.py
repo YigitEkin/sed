@@ -1,6 +1,7 @@
 import os
 from PIL import Image
 from tqdm import tqdm
+import argparse
 
 def remove_postfix(image_path):
     """Remove scaling factor (e.g., x2, x3, x4, x8) from image filename."""
@@ -43,36 +44,41 @@ def prepare_dataset(input_image_path, image_name, save_folder, crop_size, file_e
             # Save the cropped image
             cropped_image.save(output_file_path)
 
-# Define crop sizes for high resolution (HR) and low resolution (LR) images
-crop_size_hr = 400
-crop_size_lr = 100
+if __name__ == '__main__':
+    # Define command line arguments
+    parser = argparse.ArgumentParser(description='Prepare dataset by cropping images.')
+    parser.add_argument('--crop_size_hr', type=int, default=400, help='Crop size for high resolution (HR) images')
+    parser.add_argument('--crop_size_lr', type=int, default=100, help='Crop size for low resolution (LR) images')
+    parser.add_argument('--hr_folder', type=str, default='data/hr', help='Directory containing the input images for HR')
+    parser.add_argument('--lr_folder', type=str, default='data/lr', help='Directory containing the input images for LR')
+    parser.add_argument('--output_folder', type=str, default='data/dataset_cropped', help='Output folder for cropped images')
+    args = parser.parse_args()
 
-# Directory containing the input images for HR and LR
-input_folders = {
-    'hr': "data2/hr",
-    'lr': "data2/lr"
-}
+    # Directory containing the input images for HR and LR
+    input_folders = {
+        'hr': args.hr_folder,
+        'lr': args.lr_folder
+    }
+    os.makedirs(args.output_folder, exist_ok=True)
+    # Loop through HR and LR image folders
+    for image_type, input_folder in input_folders.items():
+        # Determine save folder based on image type (hr or lr)
+        save_folder = os.path.join(args.output_folder, image_type)
+        os.makedirs(save_folder, exist_ok=True)
 
-os.mkdir("data2/dataset_cropped") if not os.path.exists("data2/dataset_cropped") else None
-# Loop through HR and LR image folders
-for image_type, input_folder in input_folders.items():
-    # Determine save folder based on image type (hr or lr)
-    save_folder = f"data2/dataset_cropped/{image_type}"
-    os.mkdir(save_folder) if not os.path.exists(save_folder) else None
+        # Find all PNG files in the input folder
+        matching_files = [file for file in os.listdir(input_folder) if file.endswith('.png')]
+        matching_files = sorted([os.path.join(input_folder, file) for file in matching_files])
 
-    # Find all PNG files in the input folder
-    matching_files = [file for file in os.listdir(input_folder) if file.endswith('.png')]
-    matching_files = sorted([os.path.join(input_folder, file) for file in matching_files])
-
-    # Process each image file
-    print(f"Processing {image_type.upper()} images:")
-    for img_path in tqdm(matching_files):
-        img_name, file_extension = os.path.splitext(os.path.basename(img_path))
-        image_name = remove_postfix(img_name)
-        
-        # Choose appropriate crop size based on image type (hr or lr)
-        crop_size = crop_size_hr if image_type == 'hr' else crop_size_lr
-        
-        # Prepare dataset by cropping images
-        prepare_dataset(img_path, image_name, save_folder, crop_size, file_extension,
-                        tqdm_desc=f"Processing {image_type.upper()} images")
+        # Process each image file
+        print(f"Processing {image_type.upper()} images:")
+        for img_path in tqdm(matching_files):
+            img_name, file_extension = os.path.splitext(os.path.basename(img_path))
+            image_name = remove_postfix(img_name)
+            
+            # Choose appropriate crop size based on image type (hr or lr)
+            crop_size = args.crop_size_hr if image_type == 'hr' else args.crop_size_lr
+            
+            # Prepare dataset by cropping images
+            prepare_dataset(img_path, image_name, save_folder, crop_size, file_extension,
+                            tqdm_desc=f"Processing {image_type.upper()} images")

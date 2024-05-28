@@ -8,15 +8,15 @@ from easydict import EasyDict
 """
 def parse_config(config_file):
     """Parses configuration from python file."""
-    assert os.path.isfile(config_file)
-    directory = os.path.dirname(config_file)
-    filename = os.path.basename(config_file)
-    module_name, extension = os.path.splitext(filename)
-    assert extension == '.py'
-    sys.path.insert(0, directory)
-    module = import_module(module_name)
-    sys.path.pop(0)
-    config = EasyDict()
+    assert os.path.isfile(config_file) # Check if the file exists
+    directory = os.path.dirname(config_file) # Get the directory of the file 
+    filename = os.path.basename(config_file) # Get the name of the file
+    module_name, extension = os.path.splitext(filename) # Get the module name and extension
+    assert extension == '.py' # Check if the extension is .py
+    sys.path.insert(0, directory) # Insert the directory to the first index of the path
+    module = import_module(module_name) # Import the module
+    sys.path.pop(0) # Remove the directory from the path
+    config = EasyDict() # Create an EasyDict object
     for key, value in module.__dict__.items():
         if key.startswith('__'):
             continue

@@ -20,10 +20,10 @@ rm Flickr2K.tar
 mv Flickr2K/* data/hr
 
 echo "Generating low res images"
-python resize_4.py --folder data/hr --save_path data/lr
+python resize_4.py --folder data/hr --save_path data/lr #TODO: try
 
 echo "Preprocessing the dataset"
-python prepare_dataset.py
+python prepare_dataset.py --hr_folder data/hr --lr_folder data/lr --crop_size_hr 400 --crop_size_lr 100 --output_folder data/dataset_cropped
 
 echo "Downloading the evaluation data that consists of Manga109 (only manga is included for version 1)"
 mkdir data/evaluation data/evaluation/hr data/evaluation/lr data/evaluation/hr/manga109 data/evaluation/lr/manga109 
@@ -36,7 +36,7 @@ mv MANGA109/* data/evaluation/hr/manga109
 python resize_4.py --folder data/evaluation/hr/manga109 --save_path data/evaluation/lr/manga109
 
 echo "Downloading VGG network"
-gdown https://drive.google.com/file/d/1henrktM4Cw9hJIJBDEObAzl-eCbpzNaJ/view?usp=drive_link
+gdown https://drive.google.com/file/d/1henrktM4Cw9hJIJBDEObAzl-eCbpzNaJ/view?usp=drive_link #TODO: try
 
 echo "Downloading the pre-trained model"
 gdown --id 1WHPkBKkA2Bm19PnbOi19F9yp9YoN2FCN

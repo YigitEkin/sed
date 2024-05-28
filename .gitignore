@@ -1,1 +1,17 @@
 model_weights
+data
+callbacks/eval/__pycache__/*
+callbacks/eval/models/__pycache__/*
+datasets/__pycache__/*
+configs/__pycache__/*
+logs/*
+models/__pycache__/*
+losses/__pycache__/*
+losses/lpips/__pycache__/*
+utils/__pycache__/*
+callbacks/logger/__pycache__/*
+toy_dataset/*
+outputs/*
+KyokugenCyclone.png
+img_092.png
+submit_gpu_job.sh

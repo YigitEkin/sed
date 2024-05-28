@@ -1,7 +1,7 @@
 import torch
 import sys
 import torch.nn as nn
-sys.path.append('/scratch/users/hpc-yekin/hpc_run/SeD/models')
+sys.path.append('./models')
 from semantic_aware_fusion_block import SemanticAwareFusionBlock
 
 class PatchDiscriminator(nn.Module):

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-def get_layer(in_channels, out_channels, is_upsample=False, scale_factor=2):
+def get_layer(in_channels, out_channels, is_upsample=False, scale_factor=2, is_final=False):
     if is_upsample:
         return nn.Sequential(
             nn.Upsample(scale_factor=scale_factor, mode="nearest"),
@@ -9,7 +9,10 @@ def get_layer(in_channels, out_channels, is_upsample=False, scale_factor=2):
             nn.LeakyReLU(0.2, inplace=True)
         )
     else:
-        return nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=True)
+        return nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=True),
+            nn.LeakyReLU(0.2)
+        ) if not is_final else nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=True)
 
 def make_blocks(in_channels, out_channels, num_blocks, is_upsample=False):
     blocks = []
@@ -18,6 +21,7 @@ def make_blocks(in_channels, out_channels, num_blocks, is_upsample=False):
             in_channels + out_channels * i,
             out_channels if i < num_blocks - 1 else in_channels,
             is_upsample,
+            is_final=True if i == num_blocks - 1 else False
         )
         blocks.append(conv_block)
     return nn.ModuleList(blocks)
@@ -50,7 +54,7 @@ class Residual_in_ResidualBlock(nn.Module):
 
 
 class RRDBNet(nn.Module):
-    def __init__(self, in_channels=3, num_channels=64, num_blocks=23):
+    def __init__(self, in_channels=3, num_channels=64, num_blocks=23, clip_output=False):
         super().__init__()
         self.conv1= get_layer(in_channels, num_channels)
         self.conv2 = get_layer(num_channels, num_channels)
@@ -61,7 +65,8 @@ class RRDBNet(nn.Module):
         self.first_ups = get_layer(num_channels, num_channels, is_upsample=True)
         self.second_ups = get_layer(num_channels, num_channels, is_upsample=True)
 
-        self.rrdb= nn.Sequential(*[Residual_in_ResidualBlock(num_channels) for _ in range(num_blocks)])
+        self.rrdb= nn.Sequential(*[Residual_in_ResidualBlock(num_channels) for i in range(num_blocks)])
+        self.clip_output = clip_output
 
 
     def forward(self, x):
@@ -72,5 +77,8 @@ class RRDBNet(nn.Module):
         x = self.first_ups(x)
         x = self.second_ups(x)
         x = self.act(self.conv3(x))
-        x = self.output(x)
+        if self.clip_output:
+            x = self.output(x).clip(-1, 1)
+        else:
+            x = self.output(x)
         return x

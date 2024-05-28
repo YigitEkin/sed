@@ -26,7 +26,7 @@ dataset_module = dict(
     train_batch_size=train_batch_size,
     val_batch_size=val_batch_size,
     test_batch_size=test_batch_size,
-    train_dataset_config=dict(image_size=256, image_dir_hr="data/dataset_cropped/hr", image_dir_lr="data/dataset_cropped/lr", downsample_factor=4,mirror_augment_prob=0.5),
+    train_dataset_config=dict(image_size=256, image_dir_hr="data/dataset_cropped/hr", image_dir_lr="data/dataset_cropped/lr", downsample_factor=4),
     val_dataset_config=dict(image_size=256, image_dir_hr="data/evaluation/hr/manga109", image_dir_lr="data/evaluation/lr/manga109"),
     test_dataset_config=dict(image_size=256, image_dir_hr="data/evaluation/hr/manga109", image_dir_lr="data/evaluation/lr/manga109"),
 )
@@ -36,7 +36,7 @@ dataset_module = dict(
 ##################
 vgg_ckpt_path="/kuacc/users/hpc-yekin/hpc_run/difinpaint/DivInversionData/pretrained_models/vgg16.pth"
 loss_dict = dict(
-    VGG=dict(weight=1e-1, model_config=dict(path=vgg_ckpt_path, output_layer_idx=23, resize_input=False)),
+    VGG=dict(weight=1000.0, model_config=dict(path=vgg_ckpt_path, output_layer_idx=23, resize_input=False)),
     Adversarial_G=dict(weight=1.0),
     MSE=dict(weight=1e-1),
     Adversarial_D=dict(r1_gamma=10.0, r2_gamma=0.0)
@@ -51,7 +51,7 @@ super_resolution_module_config = dict(loss_dict=loss_dict,
     generator_decay_steps=[50_000, 100_000, 150_000, 200_000, 250_000], 
     discriminator_decay_steps=[50_000, 100_000, 150_000, 200_000, 250_000], 
     generator_decay_gamma=0.5, discriminator_decay_gamma=0.5,
-    clip_generator_outputs=False,
+    clip_generator_outputs=True,
     use_sed_discriminator=False)
 
 #######################
@@ -62,3 +62,4 @@ ckpt_callback = dict(every_n_train_steps=4000, save_top_k=1, save_last=True, mon
 synthesize_callback_train = dict(num_samples=12, eval_every=2000) # TODO: 4000
 synthesize_callback_test = dict(num_samples=6, eval_every=2000)
 fid_callback = dict(eval_every=2000)
+lpips_callback = dict(eval_every=2000)

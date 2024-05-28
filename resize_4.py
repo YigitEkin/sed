@@ -27,8 +27,8 @@ def downscale_images(folder_path, save_path):
 if __name__ == "__main__":
     # Parse the command-line arguments
     parser = argparse.ArgumentParser(description="Downscale images in a folder by 4")
-    parser.add_argument("folder", type=str, help="Path to the folder containing images")
-    parser.add_argument("save_path", type=str, help="Path to save the downscaled images")
+    parser.add_argument("--folder", type=str, help="Path to the folder containing images")
+    parser.add_argument("--save_path", type=str, help="Path to save the downscaled images")
     args = parser.parse_args()
     
     # Get the folder path and save path from the command-line arguments

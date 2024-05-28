@@ -57,30 +57,28 @@ class CrossAttention(nn.Module):
         self.dim_head = dim_head
         self.scale = dim_head ** -0.5
 
+        #initialize qkv projection layers
         self.to_q = nn.Linear(query_dim, heads * dim_head, bias=False)
         self.to_k = nn.Linear(context_dim, heads * dim_head, bias=False)
         self.to_v = nn.Linear(context_dim, heads * dim_head, bias=False)
+        
+        #final output layer
         self.final_output = nn.Linear(heads * dim_head, query_dim)
 
     def forward(self, query, context):
+        # Reshape and transpose query, key, and value tensors
         q = self.to_q(query).view(query.size(0), query.size(1), self.heads, self.dim_head).transpose(1, 2)
         k = self.to_k(context).view(context.size(0), context.size(1), self.heads, self.dim_head).transpose(1, 2)
         v = self.to_v(context).view(context.size(0), context.size(1), self.heads, self.dim_head).transpose(1, 2)
 
+        # Compute attention scores
         attn_scores = torch.matmul(q, k.transpose(-2, -1)) * self.scale
         attn_weights = F.softmax(attn_scores, dim=-1)
 
+        # Apply attention weights to values
         attn_output = torch.matmul(attn_weights, v)
         attn_output = attn_output.transpose(1, 2).reshape(query.size(0), query.size(1), self.heads * self.dim_head)
 
+        # Apply output projection
         output = self.final_output(attn_output)
         return output
-
-
-
-
-
-
-
-
-
