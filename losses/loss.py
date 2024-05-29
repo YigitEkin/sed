@@ -1,15 +1,16 @@
-import torch.nn.functional as F
 from .vgg_model import PerceptualModel
 import torch
+
+import torch.nn.functional as F
 
 class MSE:
     def __init__(self, weight, **others):
         self.weight = weight
 
     def __call__(self, image, fake_image_final, **others):
+        # Calculate mean squared error loss
         fakes = fake_image_final  
         targets = image  
-
         mse_loss = F.mse_loss(fakes, targets, reduction='mean')
         return mse_loss
     
@@ -21,6 +22,7 @@ class VGG:
         self.vgg = PerceptualModel(**model_config).to(device)
 
     def __call__(self, image, fake_image_final, **others):
+        # Calculate VGG loss
         fakes = fake_image_final 
         targets = image 
         vgg_loss = F.mse_loss(self.vgg(fakes), self.vgg(targets), reduction='mean')
@@ -33,6 +35,7 @@ class Adversarial_G:
         self.discriminator = discriminator
 
     def __call__(self, fake_image_final, semantic_feature_maps=None, **others):
+        # Calculate adversarial generator loss
         fakes = fake_image_final 
         if semantic_feature_maps is not None:
             fake_scores = self.discriminator(semantic_feature_maps=semantic_feature_maps, fs=fakes)
@@ -61,6 +64,7 @@ class Adversarial_D:
         return penalty
 
     def __call__(self, image, fake_image_final, semantic_feature_maps=None, **others):
+        # Calculate adversarial discriminator loss
         reals = image.clone()
         fake_image_final_clone = fake_image_final.detach().clone()
         fakes =  fake_image_final_clone 
@@ -86,4 +90,3 @@ class Adversarial_D:
             fake_grad_penalty = self.compute_grad_penalty(fakes, fake_scores)
         reals.requires_grad = False
         return d_loss + real_grad_penalty * (self.r1_gamma * 0.5) + fake_grad_penalty * (self.r2_gamma * 0.5)
-    

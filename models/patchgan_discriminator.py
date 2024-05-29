@@ -1,8 +1,9 @@
 import torch
 import sys
-import torch.nn as nn
 sys.path.append('./models')
 from semantic_aware_fusion_block import SemanticAwareFusionBlock
+
+import torch.nn as nn
 
 class PatchDiscriminator(nn.Module):
     def __init__(self, input_channels, num_filters=64):
@@ -16,7 +17,7 @@ class PatchDiscriminator(nn.Module):
         return fs
     
 class DownSampler(nn.Module):
-    #downsamples 4 times in a conv, bn, leaky relu fashion that halves the spatial dimensions in each step and doubles the number of filters
+    # Downsamples 4 times in a conv, bn, leaky relu fashion that halves the spatial dimensions in each step and doubles the number of filters
     def __init__(self, input_channels, num_filters=64):
         super().__init__()
         self.conv1 = nn.Conv2d(input_channels, num_filters, kernel_size=4, stride=2, padding=1)
@@ -41,6 +42,7 @@ class DownSampler(nn.Module):
     
     
 class PatchDiscriminatorWithSeD(nn.Module):
+    # PatchGAN discriminator with semantic-aware fusion blocks 
     def __init__(self, input_channels, num_filters=64):
         super().__init__()
         self.downsampler = DownSampler(input_channels, num_filters)
@@ -58,10 +60,16 @@ class PatchDiscriminatorWithSeD(nn.Module):
         return x
     
 
-    
+# for testing to check if the network can correctly process the input    
 if __name__ == "__main__":
+    # Create random input tensors
     b = torch.randn(1, 3, 256, 256)
     a = torch.randn(1,1024,16,16)
+    
+    # Create an instance of PatchDiscriminator
     model = PatchDiscriminator(3)
+    
+    # Disable gradient calculation for inference
     with torch.no_grad():
+        # Pass the input tensor through the model
         output = model(b)

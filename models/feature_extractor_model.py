@@ -160,7 +160,6 @@ class CLIPRN50(nn.Module):
             return x
 
         x = x.type(self.conv1.weight.dtype)
-        #TODO: check if this is the right way to preprocess
         x = self.preprocess(x)
         x = stem(x)
         x = self.layer1(x)

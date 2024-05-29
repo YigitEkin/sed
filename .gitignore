@@ -15,3 +15,14 @@ outputs/*
 KyokugenCyclone.png
 img_092.png
 submit_gpu_job.sh
+fig3/*
+results/*
+sed_images/*g
+gt/*
+test_images_fig3/*
+pretrained_models/vgg16.pth
+model_weights.zip
+DIV2K_train_HR
+a.txt
+a.py
+.ipynb_checkpoints/main-checkpoint.ipynb

@@ -6,7 +6,7 @@ from attention import SelfAttention
 class SemanticAwareFusionBlock(nn.Module):
     def __init__(self, channel_size_changer_input_nc=512):
         super().__init__()
-        self.group_norm = nn.GroupNorm(32, 1024) #TODO: check for the number of groups
+        self.group_norm = nn.GroupNorm(32, 1024) 
 
         self.channel_size_changer1 = nn.Conv2d(in_channels=channel_size_changer_input_nc, out_channels=128, kernel_size=1)
         self.reduce_channels2 = nn.Conv2d(in_channels=1024, out_channels=128, kernel_size=1)
@@ -76,7 +76,6 @@ class SemanticAwareFusionBlock(nn.Module):
         #permute the dimensions
 
         #out = out.view(out.shape[0], out.shape[2], int(out.shape[1] ** 0.5), -1 ) #.permute(0, 3, 1, 2)
-        #TODO:check if below or above is correct
         out = out.permute(0,2,1).contiguous().view(out.size(0), -1, final_permute_height, final_permute_width)
 
 

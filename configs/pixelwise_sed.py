@@ -34,7 +34,7 @@ dataset_module = dict(
 ##################
 ##### Losses #####
 ##################
-vgg_ckpt_path="/kuacc/users/hpc-yekin/hpc_run/difinpaint/DivInversionData/pretrained_models/vgg16.pth"
+vgg_ckpt_path="pretrained_models/vgg16.pth"
 loss_dict = dict(
     VGG=dict(weight=1000.0, model_config=dict(path=vgg_ckpt_path, output_layer_idx=23, resize_input=False)),
     Adversarial_G=dict(weight=1.0),
