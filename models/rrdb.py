@@ -28,6 +28,9 @@ def make_blocks(in_channels, out_channels, num_blocks, is_upsample=False):
     return nn.ModuleList(blocks)
 
 class DenseBlock(nn.Module):
+  '''
+  Dense Block structure from https://arxiv.org/pdf/1809.00219 Fig4 : Left
+  '''
     def __init__(self, in_channels, out_channels, num_blocks=5, is_upsample=False):
         super().__init__()
         self.blocks = make_blocks(in_channels, out_channels, num_blocks, is_upsample)
@@ -40,6 +43,10 @@ class DenseBlock(nn.Module):
         return x + current_output * 0.2
 
 class Residual_in_ResidualBlock(nn.Module):
+  '''
+  RRDB  structure from https://arxiv.org/pdf/1809.00219 Fig4 : Right
+  consists of 3 Dense Blocks
+  '''
     def __init__(self, in_channels, num_blocks=3, is_upsample=False):
         super().__init__()
         self.rrdb1 = DenseBlock(in_channels, in_channels, num_blocks, is_upsample)
@@ -53,6 +60,9 @@ class Residual_in_ResidualBlock(nn.Module):
         return x + out3 * 0.2
 
 class RRDBNet(nn.Module):
+    '''ESRGAN Generator, which consists of 23 Residual in Residual Dense Blocks
+    paper : https://arxiv.org/pdf/1809.00219
+    '''
     def __init__(self, in_channels=3, num_channels=64, num_blocks=23, clip_output=False):
         super().__init__()
         self.conv1 = get_layer(in_channels, num_channels)

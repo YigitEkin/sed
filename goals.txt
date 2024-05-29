@@ -33,3 +33,14 @@ Besides this, as mentioned in the experimantal goals DIV2K is removed from the t
 
 
 
+—— version 2 submission ——
+
+
+
+We did not changed our goals. We evaluated on LPIPS↓/PSNR↑/SSIM↑ metrics and evaluate on Set5,Set14,Urban100,Manga109,DIV2K datasets.
+
+We also reproduced Figure 3 Column 6 results in the paper ( there is a small problem here, the authors took random crops, we tried to approximate these crops as best as we can, however there is still some small difference in the inputs).
+
+
+The scores and qualitative results demonstrate a good replication of the paper results. We are very close to the exact quantitative metrics and obtained visually very good results, as demonstrated in the main.ipynb notebook.
+

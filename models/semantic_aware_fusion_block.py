@@ -24,47 +24,43 @@ class SemanticAwareFusionBlock(nn.Module):
         self.increase_channels1 = nn.Conv2d(256, 1024, 1)
 
     def forward(self, semantic_feature_maps, fs):
-        # sh have shape batch,1024,x,x
-        #feature maps (fs or fh) have shape batch x 128 
+        # fs ( or sh for generated) have shape batch, 3 x 16 x 16
+        #semantic feature maps  have shape batch x 1024 x 16 x 16
         final_permute_height = semantic_feature_maps.shape[2]
         final_permute_width = semantic_feature_maps.shape[3]
         
         #first handle S_h
         semantic_feature_maps = self.group_norm(semantic_feature_maps)
 
-        #reduce the channel dimensions for the feature maps
+        #reduce the channel dimensions for the feature maps from 1024 to 128 for computation
         semantic_feature_maps = self.reduce_channels2(semantic_feature_maps)
-
-        #permute the dimensions
 
 
         # Permute dimensions to rearrange the tensor
         semantic_feature_maps = semantic_feature_maps.permute(0, 2, 3, 1).contiguous().view(semantic_feature_maps.size(0), -1, semantic_feature_maps.size(1))
 
-
         #apply layer normalization
         semantic_feature_maps = self.layer_norm_1(semantic_feature_maps)
-
-        
 
         #apply self attention
         semantic_feature_maps = self.self_attention(semantic_feature_maps) #returned has shape 1,196,128 for now
         #apply layer normalization
         query = self.layer_norm_2(semantic_feature_maps)
 
-        #now handle fs or  fh
+        #now handle fs or  sh
         #reduce the channel dimensions for the sh
 
-
+        #make number of channels = 128 to be compatible with the semantic feature maps
         fs = self.channel_size_changer1(fs)
 
-
+        #to use fs as residual, obtain a clone, 
+        #note that gradient still accumulates in the original fs, so no problem
         fs_residual = fs.clone()
 
         #permute the dimensions
         fs = fs.permute(0, 2, 3, 1).contiguous().view(fs.size(0), -1, fs.size(1))
 
-        #apply cross attention
+        #apply cross attention, query is the semantic feature maps and fs is the key and value
         out = self.cross_attention(query, fs)
 
         #apply layer normalization
@@ -74,15 +70,12 @@ class SemanticAwareFusionBlock(nn.Module):
         out = self.GeLU(out)
 
         #permute the dimensions
-
-        #out = out.view(out.shape[0], out.shape[2], int(out.shape[1] ** 0.5), -1 ) #.permute(0, 3, 1, 2)
         out = out.permute(0,2,1).contiguous().view(out.size(0), -1, final_permute_height, final_permute_width)
-
 
         #add the residual
         output = torch.cat((out,fs_residual), dim=1)
 
-        #increase the channels
+        #increase the channels back to 1024
         output = self.increase_channels1(output)
     
         return output

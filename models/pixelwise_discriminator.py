@@ -94,6 +94,9 @@ class DownSamplerPx(nn.Module):
 class UNetPixelDiscriminatorwithSed(nn.Module):
     def __init__(self, in_channels=3, out_channels=1, num_filters=64):
         super(UNetPixelDiscriminatorwithSed, self).__init__()
+
+        #downsampler takes 256x256 images and downsamples to the 16x16
+        #to make dimensionality compatible with semantic feature maps
         self.downsampler = DownSamplerPx(in_channels, num_filters)
         
         # Semantic Aware Fusion Blocks

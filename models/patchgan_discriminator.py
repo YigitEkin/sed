@@ -5,9 +5,12 @@ from semantic_aware_fusion_block import SemanticAwareFusionBlock
 
 import torch.nn as nn
 
+
+#Vanilla patchgan discriminator
 class PatchDiscriminator(nn.Module):
     def __init__(self, input_channels, num_filters=64):
         super().__init__()
+        #Downsample the input size from 256x256 to 16x16
         self.downsampler = DownSampler(input_channels, num_filters)
         self.final_conv = nn.Conv2d(num_filters * 8, 1, kernel_size=4, stride=1, padding=1)
         
@@ -45,10 +48,13 @@ class PatchDiscriminatorWithSeD(nn.Module):
     # PatchGAN discriminator with semantic-aware fusion blocks 
     def __init__(self, input_channels, num_filters=64):
         super().__init__()
+        #First downsample the input size from 256x256 to 16x16 to match the semantic feature map size
         self.downsampler = DownSampler(input_channels, num_filters)
+        #Use 3 semantic-aware fusion blocks to fuse the semantic feature maps with the downsampled input
         self.semantic_aware_fusion_block1 = SemanticAwareFusionBlock()
         self.semantic_aware_fusion_block2 = SemanticAwareFusionBlock(channel_size_changer_input_nc=1024)
         self.semantic_aware_fusion_block3 = SemanticAwareFusionBlock(channel_size_changer_input_nc=1024)
+        #Final convolution to get the output
         self.final_conv = nn.Conv2d(num_filters * 16, 1, kernel_size=4, stride=1, padding=1)
         
     def forward(self, semantic_feature_maps, fs):
