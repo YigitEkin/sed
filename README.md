@@ -11,3 +11,7 @@ This folder provides a re-implementation of this paper in PyTorch, developed as 
 
 Please see the jupyter notebook file [main.ipynb](main.ipynb) for a summary of paper, the implementation notes and our experimental results.
 
+To install environment:
+
+Clone the repo.
+Run: conda env create --name envname --file=environment.yml.
