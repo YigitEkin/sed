@@ -52,9 +52,12 @@ echo "Downloading Set14 dataset..."
 echo "Downloading Urban100 dataset..."
 
 echo "Downloading VGG network"
+mkdir pretrained_models
 gdown --id 1henrktM4Cw9hJIJBDEObAzl-eCbpzNaJ #TODO: try
 mv vgg16.pth pretrained_models/vgg16.pth
 
 echo "Downloading the pre-trained model"
-gdown --id 1WHPkBKkA2Bm19PnbOi19F9yp9YoN2FCN
+gdown --id 1o5qMZ3B-Z-VfTOj0rqxMqk4tL8o3oo6z
+unzip model_weights.zip
+rm model_weights.zip
 echo "All done!"
