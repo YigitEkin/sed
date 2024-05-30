@@ -58,8 +58,8 @@ super_resolution_module_config = dict(loss_dict=loss_dict,
 ###### Callbacks ######
 #######################
 
-ckpt_callback = dict(every_n_train_steps=4000, save_top_k=1, save_last=True, monitor='fid_test', mode='min')
+ckpt_callback = dict(every_n_train_steps=4000, save_top_k=1, save_last=True, monitor='lpips_test', mode='min')
 synthesize_callback_train = dict(num_samples=12, eval_every=2000) # TODO: 4000
 synthesize_callback_test = dict(num_samples=6, eval_every=2000)
 fid_callback = dict(eval_every=2000)
-lpips_callback = dict(eval_every=2)
+lpips_callback = dict(eval_every=2000)
