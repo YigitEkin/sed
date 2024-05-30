@@ -136,8 +136,6 @@ class SuperResolutionModule(pl.LightningModule):
         scheduler_generator, scheduler_discriminator = self.lr_schedulers()
 
         batch_size = batch['image_hr'].shape[0]
-        # low_resolution_image = batch['image_lr'].to(self.device)
-        # high_resolution_image = batch['image_hr'].to(self.device)
 
         self.train()
         self.generator.train()

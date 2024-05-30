@@ -2,9 +2,6 @@
 
 Bingchen Li, Xin Li, Hanxin Zhu, Yeying Jin, Ruoyu Feng, Zhizheng Zhang, Zhibo Chen
 **CVPR 2024**
-
-**HERE: Add a simple picture from your results**
-
 This folder provides a re-implementation of this paper in PyTorch, developed as part of the course METU CENG 796 - Deep Generative Models. The re-implementation is provided by:
 * Mustafa Utku Aydoğdu, e270206@metu.edu.tr 
 * Yiğit Ekin, e270207@metu.edu.tr
