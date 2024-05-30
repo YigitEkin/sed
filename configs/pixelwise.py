@@ -3,6 +3,7 @@ from pytorch_lightning.strategies import DDPStrategy
 
 
 
+
 accelerator = 'gpu'
 device = torch.device("cuda") if accelerator=="gpu" else torch.device("cpu")
 if accelerator == 'cpu':
