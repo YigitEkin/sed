@@ -14,6 +14,8 @@ import torch
 import numpy as np
 import random
 from datetime import datetime
+from pytorch_lightning.strategies import DDPStrategy
+
 
 # import warnings
 # warnings.filterwarnings('ignore')
@@ -47,6 +49,15 @@ def train(args):
     config = parse_config(args.config_file)
     extend_config_parameters(config, is_debug=args.debug)
     model = SuperResolutionModule(**config.super_resolution_module_config)
+    
+    if args.device == "gpu":
+        accelerator = 'gpu'
+        device = torch.device("cuda")
+        pl_trainer = dict(max_epochs=1000, accelerator=accelerator, log_every_n_steps=50, strategy=DDPStrategy(find_unused_parameters=True), devices=torch.cuda.device_count(), sync_batchnorm=True)  
+    else:
+        device = torch.device("cpu")
+        pl_trainer = dict(max_epochs=1000, accelerator='cpu', log_every_n_steps=50, strategy=DDPStrategy(find_unused_parameters=True), devices=1) # CHECK sync_batchnorm in this and below part !!!
+
 
     ckpt_path = None
     if args.resume_from is not None:
@@ -82,13 +93,13 @@ def train(args):
                                         synthesize_callback_train, 
                                         synthesize_callback_test, lr_monitor_callback,
                                         ckpt_callback], 
-                            **config.pl_trainer)
+                            **pl_trainer)
     else:
         trainer = pl.Trainer(logger=[csv_logger, tb_logger], 
                             callbacks=[synthesize_callback_train, 
                                         synthesize_callback_test, 
                                         lr_monitor_callback, ckpt_callback], 
-                            **config.pl_trainer)
+                            **pl_trainer)
 
     seed_all(seed=0)
     trainer.fit(model, train_dataloaders=train_dataloader, ckpt_path=ckpt_path)
@@ -97,6 +108,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--config_file', type=str, default='configs/default_config.py', help='Path to config file')
     parser.add_argument('--resume_from', type=str, default=None, help='Log folder of the model to be resumed')
+    parser.add_argument('--device', type=str, default='cpu', help='device : cpu or gpu')
     parser.add_argument('--debug', action='store_true', help='Start in debugging mode')
     args = parser.parse_args()
     train(args)
