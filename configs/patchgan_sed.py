@@ -62,4 +62,4 @@ ckpt_callback = dict(every_n_train_steps=4000, save_top_k=1, save_last=True, mon
 synthesize_callback_train = dict(num_samples=12, eval_every=2000) # TODO: 4000
 synthesize_callback_test = dict(num_samples=6, eval_every=2000)
 fid_callback = dict(eval_every=2000)
-lpips_callback = dict(eval_every=2000)
+lpips_callback = dict(eval_every=2)

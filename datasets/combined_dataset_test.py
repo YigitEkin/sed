@@ -37,6 +37,24 @@ class CombinedDatasetTest(CombinedDatasetBaseClass):
         # Open high-resolution and low-resolution images
         image_hr = Image.open(os.path.join(self.image_dir_hr, image_name_hr)).convert('RGB')
         image_lr = Image.open(os.path.join(self.image_dir_lr, image_name_lr)).convert('RGB')
+        h,w = image_hr.size
+        
+        # model is trained on 256x256 images, if the given image in the dataset is smaller, resize it
+        
+        h_diff = 0
+        w_diff = 0
+        if h < self.image_size:
+            h_diff = self.image_size - h
+        if w < self.image_size:
+            w_diff = self.image_size - w
+        
+        if h_diff > 0:
+            h_ratio = self.image_size/h
+            image_hr = image_hr.resize((int(np.ceil(w * h_ratio)), int(np.ceil(h * h_ratio))), Image.BICUBIC)
+            
+        if w_diff > 0:
+            w_ratio = self.image_size/w
+            image_hr = image_hr.resize((int(np.ceil(w * w_ratio)), int(np.ceil(h * w_ratio))), Image.BICUBIC)
         
         # Set crop coordinates to (0, 0) for now
         cropped_height_lr = 0
@@ -46,7 +64,10 @@ class CombinedDatasetTest(CombinedDatasetBaseClass):
 
         # Crop high-resolution and low-resolution images
         image_hr_cropped = self.crop_image(np.array(image_hr), cropped_height_hr, cropped_width_hr)
-        image_lr_cropped = self.crop_image(np.array(image_lr), cropped_height_lr, cropped_width_lr, hr_image=False)
+        #image_lr_cropped = self.crop_image(np.array(image_lr), cropped_height_lr, cropped_width_lr, hr_image=False)
+        
+        #resizing the cropped hr patch
+        image_lr_cropped = np.array(Image.fromarray(image_hr_cropped).resize((self.down_sampled_image_size,self.down_sampled_image_size), Image.BICUBIC))
                 
         # Convert cropped images to torch tensors
         image_hr_tensor = self.postprocess_image(image_hr_cropped)

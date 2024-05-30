@@ -28,3 +28,12 @@ a.py
 .ipynb_checkpoints/main-checkpoint.ipynb
 DIV2K_valid_HR/*
 DIV2K_valid_HR.zip
+img
+results_DIV2K_valid_HR/*
+results_manga/*
+results_set5/*
+results_set14/*
+
+results_urban100/*
+results_old/*
+tmp/*
