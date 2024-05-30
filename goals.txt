@@ -42,5 +42,8 @@ We did not changed our goals. We evaluated on LPIPS↓/PSNR↑/SSIM↑ metrics a
 We also reproduced Figure 3 Column 6 results in the paper ( there is a small problem here, the authors took random crops, we tried to approximate these crops as best as we can, however there is still some small difference in the inputs).
 
 
-The scores and qualitative results demonstrate a good replication of the paper results. We are very close to the exact quantitative metrics and obtained visually very good results, as demonstrated in the main.ipynb notebook.
+The scores and qualitative results demonstrate a good replication of the paper results. We are close to the exact quantitative metrics and obtained visually good results, as demonstrated in the main.ipynb notebook.
+We think that the difference between the results proposed in the paper stems from the random crops taken from the evaluation datasets. Besides the assumptions we had to made ( which were not included in the paper) might have caused this difference.
+
+
 
